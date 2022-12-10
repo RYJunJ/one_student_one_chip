@@ -4,7 +4,7 @@ VERILATOR_CFLAGS += -MMD --build -cc \
 
 TOPNAME = top
 INC_PATH ?=
-NXDC_FILES = ~/.ssh/ysyx-workbench/npc/constr/top.nxdc
+NXDC_FILES = ~/ysyx-workbench/npc/constr/top.nxdc
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
 BIN = $(BUILD_DIR)/$(TOPNAME)
