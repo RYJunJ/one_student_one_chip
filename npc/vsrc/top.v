@@ -4,70 +4,47 @@
 `timescale 1ns/1ps
 
 module top (
-  input      [7:0]    min,
-  output reg [2:0]    mout,
-  output     [6:0]    ldo
+  output     [6:0]    ldo1,
+  output     [6:0]    ldo2,
+  input               clk,
+  input               reset
 );
 
-  wire       [3:0]    led_io_b;
-  wire       [6:0]    led_io_h;
-  wire       [2:0]    _zz_io_b;
-  wire                when_top_l44;
-  wire                when_top_l44_1;
-  wire                when_top_l44_2;
-  wire                when_top_l44_3;
-  wire                when_top_l44_4;
-  wire                when_top_l44_5;
-  wire                when_top_l44_6;
-  wire                when_top_l44_7;
+  wire       [3:0]    led1_io_b;
+  wire       [3:0]    led2_io_b;
+  wire       [6:0]    led1_io_h;
+  wire       [6:0]    led2_io_h;
+  reg        [7:0]    data;
+  wire                x;
 
-  assign _zz_io_b = mout;
-  Bcd7seg led (
-    .io_b (led_io_b[3:0]), //i
-    .io_h (led_io_h[6:0])  //o
+  Bcd7seg_1 led1 (
+    .io_b (led1_io_b[3:0]), //i
+    .io_h (led1_io_h[6:0])  //o
   );
-  always @(*) begin
-    mout = 3'b000; // @[top.scala 42:13]
-    if(when_top_l44) begin
-      mout = 3'b000; // @[top.scala 45:21]
-    end
-    if(when_top_l44_1) begin
-      mout = 3'b001; // @[top.scala 45:21]
-    end
-    if(when_top_l44_2) begin
-      mout = 3'b010; // @[top.scala 45:21]
-    end
-    if(when_top_l44_3) begin
-      mout = 3'b011; // @[top.scala 45:21]
-    end
-    if(when_top_l44_4) begin
-      mout = 3'b100; // @[top.scala 45:21]
-    end
-    if(when_top_l44_5) begin
-      mout = 3'b101; // @[top.scala 45:21]
-    end
-    if(when_top_l44_6) begin
-      mout = 3'b110; // @[top.scala 45:21]
-    end
-    if(when_top_l44_7) begin
-      mout = 3'b111; // @[top.scala 45:21]
+  Bcd7seg_1 led2 (
+    .io_b (led2_io_b[3:0]), //i
+    .io_h (led2_io_h[6:0])  //o
+  );
+  assign x = (((data[4] || data[3]) || data[2]) || data[0]); // @[BaseType.scala 305:24]
+  assign led1_io_b = data[3 : 0]; // @[top.scala 64:15]
+  assign led2_io_b = data[7 : 4]; // @[top.scala 65:15]
+  assign ldo1 = led1_io_h; // @[top.scala 66:13]
+  assign ldo2 = led2_io_h; // @[top.scala 67:13]
+  always @(posedge clk or posedge reset) begin
+    if(reset) begin
+      data <= 8'h01; // @[Data.scala 400:33]
+    end else begin
+      data <= (data >>> 1); // @[top.scala 58:10]
+      data[7] <= x; // @[top.scala 59:13]
     end
   end
 
-  assign when_top_l44 = min[0]; // @[BaseType.scala 305:24]
-  assign when_top_l44_1 = min[1]; // @[BaseType.scala 305:24]
-  assign when_top_l44_2 = min[2]; // @[BaseType.scala 305:24]
-  assign when_top_l44_3 = min[3]; // @[BaseType.scala 305:24]
-  assign when_top_l44_4 = min[4]; // @[BaseType.scala 305:24]
-  assign when_top_l44_5 = min[5]; // @[BaseType.scala 305:24]
-  assign when_top_l44_6 = min[6]; // @[BaseType.scala 305:24]
-  assign when_top_l44_7 = min[7]; // @[BaseType.scala 305:24]
-  assign led_io_b = {1'd0, _zz_io_b}; // @[top.scala 50:28]
-  assign ldo = led_io_h; // @[top.scala 51:12]
 
 endmodule
 
-module Bcd7seg (
+//Bcd7seg_1 replaced by Bcd7seg_1
+
+module Bcd7seg_1 (
   input      [3:0]    io_b,
   output reg [6:0]    io_h
 );
@@ -82,11 +59,17 @@ module Bcd7seg (
   wire                when_top_l23;
   wire                when_top_l25;
   wire                when_top_l27;
+  wire                when_top_l29;
+  wire                when_top_l31;
+  wire                when_top_l33;
+  wire                when_top_l35;
+  wire                when_top_l37;
+  wire                when_top_l39;
 
   assign when_top_l9 = (io_b == 4'b0000); // @[BaseType.scala 305:24]
   always @(*) begin
     if(when_top_l9) begin
-      io_h = 7'h7f; // @[top.scala 10:14]
+      io_h = 7'h40; // @[top.scala 10:14]
     end else begin
       if(when_top_l11) begin
         io_h = (~ 7'h06); // @[top.scala 12:14]
@@ -115,7 +98,31 @@ module Bcd7seg (
                       if(when_top_l27) begin
                         io_h = (~ 7'h6f); // @[top.scala 28:14]
                       end else begin
-                        io_h = 7'h7f; // @[top.scala 30:14]
+                        if(when_top_l29) begin
+                          io_h = (~ 7'h77); // @[top.scala 30:14]
+                        end else begin
+                          if(when_top_l31) begin
+                            io_h = (~ 7'h7c); // @[top.scala 32:14]
+                          end else begin
+                            if(when_top_l33) begin
+                              io_h = (~ 7'h39); // @[top.scala 34:14]
+                            end else begin
+                              if(when_top_l35) begin
+                                io_h = (~ 7'h5e); // @[top.scala 36:14]
+                              end else begin
+                                if(when_top_l37) begin
+                                  io_h = (~ 7'h79); // @[top.scala 38:14]
+                                end else begin
+                                  if(when_top_l39) begin
+                                    io_h = (~ 7'h71); // @[top.scala 40:14]
+                                  end else begin
+                                    io_h = 7'h7f; // @[top.scala 42:14]
+                                  end
+                                end
+                              end
+                            end
+                          end
+                        end
                       end
                     end
                   end
@@ -137,5 +144,11 @@ module Bcd7seg (
   assign when_top_l23 = (io_b == 4'b0111); // @[BaseType.scala 305:24]
   assign when_top_l25 = (io_b == 4'b1000); // @[BaseType.scala 305:24]
   assign when_top_l27 = (io_b == 4'b1001); // @[BaseType.scala 305:24]
+  assign when_top_l29 = (io_b == 4'b1010); // @[BaseType.scala 305:24]
+  assign when_top_l31 = (io_b == 4'b1011); // @[BaseType.scala 305:24]
+  assign when_top_l33 = (io_b == 4'b1100); // @[BaseType.scala 305:24]
+  assign when_top_l35 = (io_b == 4'b1101); // @[BaseType.scala 305:24]
+  assign when_top_l37 = (io_b == 4'b1110); // @[BaseType.scala 305:24]
+  assign when_top_l39 = (io_b == 4'b1111); // @[BaseType.scala 305:24]
 
 endmodule
