@@ -10,9 +10,9 @@ void single_cycle() {
 	dut.clk = 1; dut.eval();
 }
 void reset(int n) {
-	dut.reset = 0;
-	while(n-- > 0) single_cycle();
 	dut.reset = 1;
+	while(n-- > 0) single_cycle();
+	dut.reset = 0;
 }
 
 int main(int argc, char** argv, char** env) {

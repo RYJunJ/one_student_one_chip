@@ -19,7 +19,7 @@ module ps2_keyboard(clk,resetn,ps2_clk,ps2_data,num,ena);
 		end else begin
 			tmp <= 1;
 		end*/
-        if (resetn == 0) begin // reset
+        if (resetn == 1) begin // reset
             count <= 0;
 			lst <= 8'd0;
 			ena <= 1;
