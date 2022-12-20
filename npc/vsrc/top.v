@@ -65,9 +65,9 @@ module top (
   wire       [11:0]   _zz_maddr_7;
   wire       [9:0]    _zz_maddr_8;
   wire       [9:0]    _zz_when_top_l267;
-  wire                _zz_ziku_port;
   wire       [7:0]    _zz_io_b;
   wire       [7:0]    _zz_io_b_1;
+  reg                 _zz_1;
   reg                 chnge;
   wire       [9:0]    h_addr;
   wire       [9:0]    v_addr;
@@ -83,11 +83,11 @@ module top (
   assign _zz_curadr = _zz_curadr_1;
   assign _zz_curadr_1 = (_zz_curadr_2 + _zz_curadr_4);
   assign _zz_curadr_2 = (_zz_curadr_3 * 7'h46);
-  assign _zz_curadr_3 = (vga_v_addr >>> 4);
+  assign _zz_curadr_3 = (vga_v_addr >> 4);
   assign _zz_curadr_5 = (vga_h_addr / 10'b1001);
   assign _zz_curadr_4 = {7'd0, _zz_curadr_5};
   assign _zz_maddr_1 = (_zz_maddr_2 + _zz_maddr_5);
-  assign _zz_maddr_2 = (_zz_maddr_3 <<< 4);
+  assign _zz_maddr_2 = (_zz_maddr_3 << 4);
   assign _zz_maddr_4 = _zz_ziku_port0;
   assign _zz_maddr_3 = {4'd0, _zz_maddr_4};
   assign _zz_maddr_6 = (_zz_maddr_7 % 12'h10);
@@ -97,10 +97,9 @@ module top (
   assign _zz_when_top_l267 = (vga_h_addr % 10'b1001);
   assign _zz_io_b = cnt;
   assign _zz_io_b_1 = cnt;
-  assign _zz_ziku_port = 1'b1;
   assign _zz_ziku_port0 = ziku[_zz_maddr];
   always @(posedge clk) begin
-    if(_zz_ziku_port) begin
+    if(_zz_1) begin
       ziku[myArea_kuadr] <= rom_data;
     end
   end
@@ -167,6 +166,13 @@ module top (
     .maddr    (vmem_1_maddr[11:0]   ), //i
     .vga_data (vmem_1_vga_data[11:0])  //o
   );
+  always @(*) begin
+    _zz_1 = 1'b0; // @[when.scala 47:16]
+    if(keyboard_ena) begin
+      _zz_1 = 1'b1; // @[when.scala 52:10]
+    end
+  end
+
   assign when_top_l254 = ((chnge == 1'b1) && (keyboard_ena == 1'b0)); // @[BaseType.scala 305:24]
   assign _zz_maddr = curadr; // @[BaseType.scala 318:22]
   assign vmem_1_maddr = _zz_maddr_1; // @[top.scala 266:19]
@@ -179,26 +185,26 @@ module top (
     end
   end
 
-  assign led1_io_b = myArea_kuadr[3 : 0]; // @[top.scala 278:15]
-  assign led2_io_b = myArea_kuadr[7 : 4]; // @[top.scala 280:15]
-  assign led3_io_b = _zz_ziku_port2[3 : 0]; // @[top.scala 282:15]
-  assign led4_io_b = _zz_ziku_port3[7 : 4]; // @[top.scala 284:15]
-  assign led5_io_b = _zz_io_b[3 : 0]; // @[top.scala 286:15]
-  assign led6_io_b = _zz_io_b_1[7 : 4]; // @[top.scala 288:15]
-  assign ldo1 = led1_io_h; // @[top.scala 291:13]
-  assign ldo2 = led2_io_h; // @[top.scala 292:13]
-  assign ldo3 = led3_io_h; // @[top.scala 293:13]
-  assign ldo4 = led4_io_h; // @[top.scala 294:13]
-  assign ldo5 = led5_io_h; // @[top.scala 295:13]
-  assign ldo6 = led6_io_h; // @[top.scala 296:13]
-  assign h_addr = vga_h_addr; // @[top.scala 299:12]
-  assign v_addr = vga_v_addr; // @[top.scala 300:12]
-  assign VGA_HSYNC = vga_hsync_1; // @[top.scala 301:18]
-  assign VGA_VSYNC = vga_vsync_1; // @[top.scala 302:18]
-  assign VGA_BLANK_N = vga_valid; // @[top.scala 303:20]
-  assign VGA_R = vga_vga_r; // @[top.scala 304:14]
-  assign VGA_G = vga_vga_g; // @[top.scala 305:14]
-  assign VGA_B = vga_vga_b; // @[top.scala 306:14]
+  assign led1_io_b = myArea_kuadr[3 : 0]; // @[top.scala 280:15]
+  assign led2_io_b = myArea_kuadr[7 : 4]; // @[top.scala 282:15]
+  assign led3_io_b = _zz_ziku_port2[3 : 0]; // @[top.scala 284:15]
+  assign led4_io_b = _zz_ziku_port3[7 : 4]; // @[top.scala 286:15]
+  assign led5_io_b = _zz_io_b[3 : 0]; // @[top.scala 288:15]
+  assign led6_io_b = _zz_io_b_1[7 : 4]; // @[top.scala 290:15]
+  assign ldo1 = led1_io_h; // @[top.scala 293:13]
+  assign ldo2 = led2_io_h; // @[top.scala 294:13]
+  assign ldo3 = led3_io_h; // @[top.scala 295:13]
+  assign ldo4 = led4_io_h; // @[top.scala 296:13]
+  assign ldo5 = led5_io_h; // @[top.scala 297:13]
+  assign ldo6 = led6_io_h; // @[top.scala 298:13]
+  assign h_addr = vga_h_addr; // @[top.scala 301:12]
+  assign v_addr = vga_v_addr; // @[top.scala 302:12]
+  assign VGA_HSYNC = vga_hsync_1; // @[top.scala 303:18]
+  assign VGA_VSYNC = vga_vsync_1; // @[top.scala 304:18]
+  assign VGA_BLANK_N = vga_valid; // @[top.scala 305:20]
+  assign VGA_R = vga_vga_r; // @[top.scala 306:14]
+  assign VGA_G = vga_vga_g; // @[top.scala 307:14]
+  assign VGA_B = vga_vga_b; // @[top.scala 308:14]
   always @(posedge clk) begin
     chnge <= keyboard_ena; // @[top.scala 252:11]
     if(when_top_l254) begin
