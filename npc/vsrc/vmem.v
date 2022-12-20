@@ -1,15 +1,14 @@
 module vmem (
-	input [9:0] h_addr,
-	input [8:0] v_addr,
-	output [23:0] vga_data
+	input [11:0] maddr,
+	output [11:0] vga_data
 );
 
-reg [23:0] vga_mem [524287:0];
+reg [11:0] vga_mem [4095:0];
 
 initial begin
-	$readmemh("resource/picture.hex", vga_mem);
+	$readmemh("resource/vga_font.txt", vga_mem);
 end
 
-assign vga_data = vga_mem[{h_addr, v_addr}];
+assign vga_data = vga_mem[maddr];
 
 endmodule
