@@ -29,6 +29,8 @@ module top (
   wire       [3:0]    led6_io_b;
   wire       [11:0]   vmem_1_maddr;
   wire       [7:0]    _zz_ziku_port0;
+  wire       [7:0]    _zz_ziku_port2;
+  wire       [7:0]    _zz_ziku_port3;
   wire       [7:0]    keyboard_num;
   wire                keyboard_ena;
   wire                keyboard_dnclk;
@@ -54,13 +56,15 @@ module top (
   wire       [9:0]    _zz_curadr_3;
   wire       [16:0]   _zz_curadr_4;
   wire       [9:0]    _zz_curadr_5;
-  wire       [7:0]    _zz_maddr_1;
-  wire       [7:0]    _zz_maddr_2;
-  wire       [7:0]    _zz_maddr_3;
+  wire       [11:0]   _zz_maddr_1;
+  wire       [11:0]   _zz_maddr_2;
+  wire       [11:0]   _zz_maddr_3;
   wire       [7:0]    _zz_maddr_4;
-  wire       [9:0]    _zz_maddr_5;
+  wire       [11:0]   _zz_maddr_5;
+  wire       [11:0]    _zz_maddr_6;
+  wire       [11:0]   _zz_maddr_7;
+  wire       [9:0]    _zz_maddr_8;
   wire       [9:0]    _zz_when_top_l267;
-  wire       [9:0]    _zz_when_top_l267_1;
   wire                _zz_ziku_port;
   wire       [7:0]    _zz_io_b;
   wire       [7:0]    _zz_io_b_1;
@@ -79,16 +83,18 @@ module top (
   assign _zz_curadr = _zz_curadr_1;
   assign _zz_curadr_1 = (_zz_curadr_2 + _zz_curadr_4);
   assign _zz_curadr_2 = (_zz_curadr_3 * 7'h46);
-  assign _zz_curadr_3 = (vga_v_addr >> 4);
+  assign _zz_curadr_3 = (vga_v_addr >>> 4);
   assign _zz_curadr_5 = (vga_h_addr / 10'b1001);
   assign _zz_curadr_4 = {7'd0, _zz_curadr_5};
-  assign _zz_maddr_1 = _zz_maddr_2;
-  assign _zz_maddr_2 = (_zz_maddr_3 + _zz_maddr_4);
-  assign _zz_maddr_3 = (_zz_ziku_port0 << 4);
-  assign _zz_maddr_5 = (vga_v_addr % 10'd16);
-  assign _zz_maddr_4 = {3'd0, _zz_maddr_5[4:0]};
-  assign _zz_when_top_l267 = (_zz_when_top_l267_1 + 10'b0011);
-  assign _zz_when_top_l267_1 = (vga_h_addr % 10'd9);
+  assign _zz_maddr_1 = (_zz_maddr_2 + _zz_maddr_5);
+  assign _zz_maddr_2 = (_zz_maddr_3 <<< 4);
+  assign _zz_maddr_4 = _zz_ziku_port0;
+  assign _zz_maddr_3 = {4'd0, _zz_maddr_4};
+  assign _zz_maddr_6 = (_zz_maddr_7 % 12'h10);
+  assign _zz_maddr_5 = {7'd0, _zz_maddr_6[4:0]};
+  assign _zz_maddr_8 = vga_v_addr;
+  assign _zz_maddr_7 = {2'd0, _zz_maddr_8};
+  assign _zz_when_top_l267 = (vga_h_addr % 10'b1001);
   assign _zz_io_b = cnt;
   assign _zz_io_b_1 = cnt;
   assign _zz_ziku_port = 1'b1;
@@ -99,6 +105,8 @@ module top (
     end
   end
 
+  assign _zz_ziku_port2 = ziku[myArea_kuadr];
+  assign _zz_ziku_port3 = ziku[myArea_kuadr];
   ps2_keyboard keyboard (
     .ps2_clk  (ps2_clk          ), //i
     .ps2_data (ps2_data         ), //i
@@ -110,22 +118,22 @@ module top (
   );
   Bcd7seg_5 led1 (
     .io_b   (led1_io_b[3:0]), //i
-    .io_ena (keyboard_ena  ), //i
+    .io_ena (1'b1          ), //i
     .io_h   (led1_io_h[6:0])  //o
   );
   Bcd7seg_5 led2 (
     .io_b   (led2_io_b[3:0]), //i
-    .io_ena (keyboard_ena  ), //i
+    .io_ena (1'b1          ), //i
     .io_h   (led2_io_h[6:0])  //o
   );
   Bcd7seg_5 led3 (
     .io_b   (led3_io_b[3:0]), //i
-    .io_ena (keyboard_ena  ), //i
+    .io_ena (1'b1          ), //i
     .io_h   (led3_io_h[6:0])  //o
   );
   Bcd7seg_5 led4 (
     .io_b   (led4_io_b[3:0]), //i
-    .io_ena (keyboard_ena  ), //i
+    .io_ena (1'b1          ), //i
     .io_h   (led4_io_h[6:0])  //o
   );
   Bcd7seg_5 led5 (
@@ -161,7 +169,7 @@ module top (
   );
   assign when_top_l254 = ((chnge == 1'b1) && (keyboard_ena == 1'b0)); // @[BaseType.scala 305:24]
   assign _zz_maddr = curadr; // @[BaseType.scala 318:22]
-  assign vmem_1_maddr = {4'd0, _zz_maddr_1}; // @[top.scala 266:19]
+  assign vmem_1_maddr = _zz_maddr_1; // @[top.scala 266:19]
   assign when_top_l267 = vmem_1_vga_data[_zz_when_top_l267[3:0]]; // @[BaseType.scala 305:24]
   always @(*) begin
     if(when_top_l267) begin
@@ -171,10 +179,10 @@ module top (
     end
   end
 
-  assign led1_io_b = keyboard_num[3 : 0]; // @[top.scala 278:15]
-  assign led2_io_b = keyboard_num[7 : 4]; // @[top.scala 280:15]
-  assign led3_io_b = rom_data[3 : 0]; // @[top.scala 282:15]
-  assign led4_io_b = rom_data[7 : 4]; // @[top.scala 284:15]
+  assign led1_io_b = myArea_kuadr[3 : 0]; // @[top.scala 278:15]
+  assign led2_io_b = myArea_kuadr[7 : 4]; // @[top.scala 280:15]
+  assign led3_io_b = _zz_ziku_port2[3 : 0]; // @[top.scala 282:15]
+  assign led4_io_b = _zz_ziku_port3[7 : 4]; // @[top.scala 284:15]
   assign led5_io_b = _zz_io_b[3 : 0]; // @[top.scala 286:15]
   assign led6_io_b = _zz_io_b_1[7 : 4]; // @[top.scala 288:15]
   assign ldo1 = led1_io_h; // @[top.scala 291:13]
