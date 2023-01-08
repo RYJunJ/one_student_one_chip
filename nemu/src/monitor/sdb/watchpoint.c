@@ -14,24 +14,50 @@
 ***************************************************************************************/
 
 #include "sdb.h"
+#include <watchpoint.h>
 
 #define NR_WP 32
 
-typedef struct watchpoint {
-  int NO;
-  struct watchpoint *next;
-
-  /* TODO: Add more members if necessary */
-
-} WP;
-
 static WP wp_pool[NR_WP] = {};
 static WP *head = NULL, *free_ = NULL;
+
+WP* new_wp();
+void free_wp(WP *wp);
+
+WP* get_wp_head() {
+	return head;
+}
+
+WP* new_wp() {
+	assert(free_);
+	WP* tmp = free_;
+	free_ = (*free_).next;
+	(*tmp).next = head;
+	head = tmp;
+	return tmp;	
+}
+
+void free_wp(WP* to_free) {
+	WP* tmp = head;
+	while(tmp)
+		if(tmp->next == to_free || tmp == to_free)
+			break;
+	if(tmp == to_free)
+		head = to_free->next;
+	else if(tmp->next == to_free)
+		tmp->next = to_free->next;
+	(*to_free).NO = 0;
+	memset((*to_free).watch_expr, 0, sizeof(char)*32);
+	(*to_free).last_val = 0;
+	(*to_free).next = free_;
+	free_ = to_free;
+}
 
 void init_wp_pool() {
   int i;
   for (i = 0; i < NR_WP; i ++) {
     wp_pool[i].NO = i;
+	memset(wp_pool[i].watch_expr, 0, sizeof(char)*32);
     wp_pool[i].next = (i == NR_WP - 1 ? NULL : &wp_pool[i + 1]);
   }
 

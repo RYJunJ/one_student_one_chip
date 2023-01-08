@@ -12,7 +12,9 @@
 *
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
-
+#include <common.h>
+#include <watchpoint.h>
+#include <generated/autoconf.h>
 #include <cpu/cpu.h>
 #include <cpu/decode.h>
 #include <cpu/difftest.h>
@@ -30,14 +32,35 @@ uint64_t g_nr_guest_inst = 0;
 static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
 
+WP* get_wp_head();
+word_t expr(char *, bool *);
 void device_update();
 
-static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
+static void trace_and_difftest(Decode *_this, vaddr_t dnpc, WP* wp_head) {
 #ifdef CONFIG_ITRACE_COND
   if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
+
+#ifdef CONFIG_WATCHPOINT
+	bool is_diff = false;
+	WP* tmp_head = wp_head;
+	while(tmp_head) {
+		bool difftest_success = false;
+		word_t difftest_data = expr((*tmp_head).watch_expr, &difftest_success);
+		assert(difftest_success);
+		if(difftest_data != (*tmp_head).last_val) {
+			is_diff = true;
+			Log("Watch Point #%d EXPR = %s: Change from %" PRIx64 " to %" PRIx64 "", (*tmp_head).NO, (*tmp_head).watch_expr, (*tmp_head).last_val, difftest_data);
+			(*tmp_head).last_val = difftest_data;
+		}
+		tmp_head = (*tmp_head).next;
+	}
+	if(is_diff)
+		nemu_state.state = NEMU_STOP;
+#endif
+  
 }
 
 static void exec_once(Decode *s, vaddr_t pc) {
@@ -72,7 +95,7 @@ static void execute(uint64_t n) {
   for (;n > 0; n --) {
     exec_once(&s, cpu.pc);
     g_nr_guest_inst ++;
-    trace_and_difftest(&s, cpu.pc);
+    trace_and_difftest(&s, cpu.pc, get_wp_head());
     if (nemu_state.state != NEMU_RUNNING) break;
     IFDEF(CONFIG_DEVICE, device_update());
   }

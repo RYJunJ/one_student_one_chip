@@ -14,13 +14,19 @@
 ***************************************************************************************/
 
 #include <isa.h>
+#include <watchpoint.h>
 #include <cpu/cpu.h>
+#include <memory/paddr.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "sdb.h"
 
 static int is_batch_mode = false;
+static int wp_num = 0;
 
+WP* new_wp();
+void free_wp(WP*);
+WP* get_wp_head();
 void init_regex();
 void init_wp_pool();
 
@@ -54,6 +60,86 @@ static int cmd_q(char *args) {
 
 static int cmd_help(char *args);
 
+static int cmd_si(char *args) {
+	int step_number = atoi(args);
+	cpu_exec(step_number);
+	return 0;
+}
+
+static int cmd_info(char *args) {
+	if(args[0] == 'r') { 
+		isa_reg_display();
+	}else if(args[0] == 'w') {
+		WP* info_head = get_wp_head();
+		if(!info_head)
+			printf("No Watch Point\n");
+		else {
+			printf("Num\tLAST VAL\t\t\tEXPR\n");
+			while(info_head) {
+				printf("#%d\tlast_val = %" PRIx64 "\tEXPR: %s\n", (*info_head).NO, (*info_head).last_val, (*info_head).watch_expr);
+				info_head = info_head->next;
+			}
+		}
+	}
+	return 0;
+}
+
+static int cmd_x(char *args) {
+	int n_4byte = atoi(args);
+	bool success = false;
+	args = strtok(args, " ");
+	args = strtok(NULL, " ");
+	paddr_t x_addr = expr(args, &success);
+	if(!success)
+		printf("Error in Calculating EXPR\n");
+	else {
+		for(int i=0;i<n_4byte;i++)
+			printf("[0x%8x]: 0x%8lx\n", x_addr+i*4, paddr_read(x_addr+i*4,4));
+	}
+	return 0;
+} 
+
+static int cmd_p(char *args) {
+	bool success_calculate = false;
+	word_t cmd_p_data = expr(args, &success_calculate);
+	if(!success_calculate)
+		printf("Error in Calcuating EXPR\n");
+	else
+		printf("EXPR = %" PRIx64 "\n", cmd_p_data);
+	return 0;
+}
+
+static int cmd_w(char *args) {
+	WP* watch_point = new_wp();
+	(*watch_point).NO = wp_num++;
+	strcpy((*watch_point).watch_expr, args);
+	bool cmd_w_success = false;
+	(*watch_point).last_val = expr(args, &cmd_w_success);
+	assert(cmd_w_success);
+	return 0;
+}
+
+static int cmd_d(char *args) {
+	bool is_delete = false;
+	int delete_num = atoi(args);
+	WP* delete_head = get_wp_head();
+	if(!delete_head)
+		printf("No Watch Point\n");
+	else {
+		while(delete_head) {
+			if((*delete_head).NO == delete_num) {
+				free_wp(delete_head);
+				is_delete = true;
+				break;
+			}
+			delete_head = delete_head->next;
+		}
+	}
+	if(!is_delete)
+		printf("ERROR: Can't find Watch Point\n");
+	return 0;
+}
+
 static struct {
   const char *name;
   const char *description;
@@ -62,7 +148,12 @@ static struct {
   { "help", "Display information about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
-
+  { "si", "Step in [N] steps", cmd_si },
+  { "info", "Print register status[info r], or watch point status[info w]", cmd_info },
+  { "x", "Print Mem [x 10 $esp]", cmd_x },
+  { "p", "Calculate Expr", cmd_p },
+  { "w", "Add Watch Point", cmd_w },
+  { "d", "Delete Watch Point#[N]", cmd_d }
   /* TODO: Add more commands */
 
 };

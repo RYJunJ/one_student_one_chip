@@ -1,5 +1,9 @@
 mainmenu "NEMU Configuration Menu"
 
+config WATCHPOINT
+  bool "Enable Watch Point"
+  default n
+
 choice
   prompt "Base ISA"
   default ISA_riscv32
