@@ -39,7 +39,7 @@ void difftest_regcpy(void *dut, bool direction) {
   union isa_gdb_regs qemu_r;
   gdb_getregs(&qemu_r);
   if (direction == DIFFTEST_TO_REF) {
-    memcpy(&qemu_r, dut, DIFFTEST_REG_SIZE);
+      memcpy(&qemu_r, dut, DIFFTEST_REG_SIZE);
     gdb_setregs(&qemu_r);
   } else {
     memcpy(dut, &qemu_r, DIFFTEST_REG_SIZE);

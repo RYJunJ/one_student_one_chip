@@ -301,10 +301,11 @@ static word_t eval(int p, int q) {
 			}
 			//printf("%u %c %u = ", val1, last_operator, val2);
 			switch (last_operator) {
-				case DEREF:
+				case DEREF: {
 					paddr_t deref_addr = eval(main_operator + 1, q);
 					word_t deref_data = paddr_read(deref_addr, 8);
 					return deref_data;
+				}
 				case '+': /*printf("%u\n", val1 + val2);*/ return (val1 + val2);
 				case '-': /*printf("%u\n", val1 - val2);*/ return (val1 - val2);
 				case '*': /*printf("%u\n", val1 * val2);*/ return (val1 * val2);

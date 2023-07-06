@@ -19,18 +19,21 @@
 #include <cpu/decode.h>
 #include <cpu/difftest.h>
 #include <locale.h>
+#include <string.h>
 
 /* The assembly code of instructions executed is only output to the screen
  * when the number of instructions executed is less than this value.
  * This is useful when you use the `si' command.
  * You can modify this value as you want.
  */
-#define MAX_INST_TO_PRINT 10
+#define MAX_INST_TO_PRINT 11
 
 CPU_state cpu = {};
 uint64_t g_nr_guest_inst = 0;
 static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
+static char ringbuf[20][100];
+static int idx_ring;
 
 WP* get_wp_head();
 word_t expr(char *, bool *);
@@ -95,6 +98,8 @@ static void execute(uint64_t n) {
   for (;n > 0; n --) {
     exec_once(&s, cpu.pc);
     g_nr_guest_inst ++;
+    //strncpy(ringbuf[idx_ring], s.logbuf, 99);
+    idx_ring = (idx_ring == 19 ? 0 : idx_ring + 1);
     trace_and_difftest(&s, cpu.pc, get_wp_head());
     if (nemu_state.state != NEMU_RUNNING) break;
     IFDEF(CONFIG_DEVICE, device_update());
@@ -141,6 +146,16 @@ void cpu_exec(uint64_t n) {
            (nemu_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) :
             ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED))),
           nemu_state.halt_pc);
+      //iringbuf
+      if(nemu_state.state == NEMU_ABORT) {
+        printf("RingBuffer Trace: \n");
+        int tmp_idx = idx_ring;
+        do {
+          if(ringbuf[tmp_idx][0])
+            printf("%s\n", ringbuf[tmp_idx]);
+          tmp_idx = (tmp_idx == 19 ? 0 : tmp_idx + 1);
+        }while(tmp_idx != idx_ring);
+      }
       // fall through
     case NEMU_QUIT: statistic();
   }

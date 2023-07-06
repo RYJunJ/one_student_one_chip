@@ -70,7 +70,14 @@ static inline void update_screen() {
 #endif
 #endif
 
+#define SYNC_ADDR (VGACTL_ADDR + 4)
+
 void vga_update_screen() {
+  if(vgactl_port_base[1]) {
+    update_screen();
+    vgactl_port_base[1] = 0;
+    //printf("NOOO\n");
+  }
   // TODO: call `update_screen()` when the sync register is non-zero,
   // then zero out the sync register
 }

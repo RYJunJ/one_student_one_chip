@@ -22,11 +22,15 @@ endif
 -include $(NEMU_HOME)/include/config/auto.conf
 -include $(NEMU_HOME)/include/config/auto.conf.cmd
 
+# remove_quote 其实是一个函数，就像lambda函数一样，用来删除参数中的双引号
 remove_quote = $(patsubst "%",%,$(1))
 
 # Extract variabls from menuconfig
 GUEST_ISA ?= $(call remove_quote,$(CONFIG_ISA))
+$(warning GUEST_ISA==$(GUEST_ISA))
+# ?= 意为仅当 ENGINE 没有被赋过值时才用 ?= 后的表达式赋值
 ENGINE ?= $(call remove_quote,$(CONFIG_ENGINE))
+$(warning CONFIG_ENGINE==$(CONFIG_ENGINE))
 NAME    = $(GUEST_ISA)-nemu-$(ENGINE)
 
 # Include all filelist.mk to merge file lists

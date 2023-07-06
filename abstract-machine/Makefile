@@ -85,6 +85,7 @@ CFLAGS   += -O2 -MMD -Wall -Werror $(INCFLAGS) \
             -DARCH_H=\"arch/$(ARCH).h\" \
             -fno-asynchronous-unwind-tables -fno-builtin -fno-stack-protector \
             -Wno-main -U_FORTIFY_SOURCE
+$(info AM_HOME/Makefile/CFLAGS==$(CFLAGS))
 CXXFLAGS +=  $(CFLAGS) -ffreestanding -fno-rtti -fno-exceptions
 ASFLAGS  += -MMD $(INCFLAGS)
 LDFLAGS  += -z noexecstack
@@ -105,7 +106,7 @@ endif
 ### Rule (compile): a single `.c` -> `.o` (gcc)
 $(DST_DIR)/%.o: %.c
 	@mkdir -p $(dir $@) && echo + CC $<
-	@$(CC) -std=gnu11 $(CFLAGS) -c -o $@ $(realpath $<)
+	@$(CC) -std=gnu11 -g $(CFLAGS) -c -o $@ $(realpath $<)
 
 ### Rule (compile): a single `.cc` -> `.o` (g++)
 $(DST_DIR)/%.o: %.cc

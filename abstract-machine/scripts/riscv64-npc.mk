@@ -1,3 +1,4 @@
+include $(AM_HOME)/scripts/platform/npc.mk
 include $(AM_HOME)/scripts/isa/riscv64.mk
 
 AM_SRCS := riscv/npc/start.S \

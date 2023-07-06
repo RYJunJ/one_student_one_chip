@@ -33,24 +33,6 @@ int main(int argc, char *argv[])
 
   /* Start engine. */
   engine_start();
-  /*
-  FILE *fp = fopen("/home/yjunj/ysyx-workbench/nemu/tools/gen-expr/build/input", "r");
-  assert(fp != NULL);
-  int cnt = 0;
-  word_t ans = 0;
-  while(fscanf(fp, "%u %s", &ans, main_expr_data)) {
-  bool exp_succ;
-  word_t tst_ans = expr(main_expr_data, &exp_succ);
-  if(ans == tst_ans)
-    printf("Success at point:%d\n",cnt++);
-  else {
-    printf("Failed at point:%d\n",cnt++);
-    break;
-  }
-  memset(main_expr_data, 0, sizeof(main_expr_data[0])*65540);
-  }
-  fclose(fp);
-  */
   is_exit_status_bad();
   return 0;
 }

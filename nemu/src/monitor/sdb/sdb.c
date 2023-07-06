@@ -20,6 +20,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "sdb.h"
+void arch_cpu_exec(int);
 
 static int is_batch_mode = false;
 static int wp_num = 0;
@@ -67,7 +68,7 @@ static int cmd_help(char *args);
 static int cmd_si(char *args)
 {
   int step_number = atoi(args);
-  cpu_exec(step_number);
+  cpu_exec(step_number);  
   return 0;
 }
 
