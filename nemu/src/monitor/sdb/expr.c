@@ -20,8 +20,10 @@
  */
 #include <regex.h>
 
+extern CPU_state cpu;
+
 enum {
-  TK_NOTYPE = 1, TK_REG, TK_HEX, TK_DEC, TK_EQ, TK_NEQ, TK_AND, DEREF
+  TK_NOTYPE = 1, TK_REG, TK_HEX, TK_DEC, TK_EQ, TK_NEQ, TK_AND, DEREF, TK_PC
 
   /* TODO: Add more token types */
 
@@ -49,6 +51,7 @@ static struct rule {
   {"==", TK_EQ},        // equal
   {"!=", TK_NEQ},		// not equal
   {"&&", TK_AND},		// &&
+  {"pc", TK_PC},
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -179,6 +182,9 @@ static bool make_token(char *e) {
 			case TK_AND :
 				tokens[++nr_token].type = TK_AND;
 				break;
+			case TK_PC :
+				tokens[++nr_token].type = TK_PC;
+				break;
 			default: ;
         }
 
@@ -246,6 +252,9 @@ static word_t eval(int p, int q) {
 				return reg_data;
 			else
 				assert(success);
+		}else if(tokens[p].type == TK_PC) {
+			//printf("expr: pc == %lx", cpu.pc);
+			return cpu.pc;
 		}
 	}
 	else if(check_parentheses(p, q) == true) {

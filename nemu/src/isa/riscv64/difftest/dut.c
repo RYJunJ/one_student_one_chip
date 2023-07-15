@@ -22,6 +22,10 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
     if(ref_r->gpr[i] != gpr(i))
       return false;
   }
+  if(ref_r->pc != pc) {
+    //printf("NOT EQUAL PC: spike: %lx, nemu: %lx\n", ref_r->pc, pc);
+    ;//return false;
+  }
   return true;
 }
 

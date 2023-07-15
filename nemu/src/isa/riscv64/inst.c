@@ -24,18 +24,34 @@
 #define Mw vaddr_write
 
 uint64_t cur_pc = 0;
+uint64_t mtvec, mepc, mcause, mstatus = 0xa00001800;
+uint64_t *csr;
 
 void check_call(vaddr_t);
 void check_ret(vaddr_t);
+IFDEF(CONFIG_DIFFTEST, extern void (*ref_difftest_raise_intr)(uint64_t NO));
 
 enum {
-  TYPE_R, TYPE_I, TYPE_S, TYPE_B, TYPE_U, TYPE_J,
+  TYPE_R, TYPE_I, TYPE_S, TYPE_B, TYPE_U, TYPE_J, TYPE_T,
   TYPE_N, // none
 };
 
 #define src1R() do { *src1 = R(rs1); } while (0)
 #define src2R() do { *src2 = R(rs2); } while (0)
-//#define immR() do { *imm = SEXT(BITS(((*src1) + (*src2)), 31, 0), 32); } while(0)
+#define csrR()  do { \
+                    switch(csr_idx) { \
+                      case 0x305: \
+                        csr = &mtvec;   break; \
+                      case 0x341: \
+                        csr = &mepc;    break; \
+                      case 0x342: \
+                        csr = &mcause;  break; \
+                      case 0x300: \
+                        csr = &mstatus; break; \
+                      default : \
+                        Assert(0, "Invalid CSR!!\n"); \
+                    } \
+                } while(0)
 #define immI() do { *imm = SEXT(BITS(i, 31, 20), 12); } while(0)
 #define immU() do { *imm = SEXT(BITS(i, 31, 12), 20) << 12; } while(0)
 #define immJ() do { *imm = SEXT(((BITS(i, 31, 31) << 20) + (BITS(i, 19, 12) << 12) + (BITS(i, 20, 20) << 11) + (BITS(i, 30, 21) << 1)), 21); } while(0)
@@ -47,6 +63,7 @@ static void decode_operand(Decode *s, int *dest, word_t *src1, word_t *src2, wor
   int rd  = BITS(i, 11, 7);
   int rs1 = BITS(i, 19, 15);
   int rs2 = BITS(i, 24, 20);
+  int csr_idx = BITS(i, 31, 20);
   *dest = rd;
   switch (type) {
     case TYPE_R: src1R(); src2R();         break;
@@ -55,6 +72,7 @@ static void decode_operand(Decode *s, int *dest, word_t *src1, word_t *src2, wor
     case TYPE_J:                   immJ(); break;
     case TYPE_S: src1R(); src2R(); immS(); break;
     case TYPE_B: src1R(); src2R(); immB(); break;
+    case TYPE_T: src1R(); csrR();          break;
   }
 }
 
@@ -131,6 +149,10 @@ static int decode_exec(Decode *s) {
   INSTPAT("??????? ????? ????? 101 ????? 11000 11", bge    , B, s->dnpc = ((int64_t)src1  >= (int64_t)src2)  ? s->pc + imm : s->dnpc; IFDEF(CONFIG_FTRACE, check_call(s->dnpc)););
   INSTPAT("??????? ????? ????? 111 ????? 11000 11", bgeu   , B, s->dnpc = ((uint64_t)src1  >= (uint64_t)src2)  ? s->pc + imm : s->dnpc; IFDEF(CONFIG_FTRACE, check_call(s->dnpc)););
   INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak , N, NEMUTRAP(s->pc, R(10))); // R(10) is $a0
+  INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall  , N, s->dnpc = isa_raise_intr(1, s->pc); IFDEF(CONFIG_DIFFTEST, ref_difftest_raise_intr(1)));
+  INSTPAT("0011000 00010 00000 000 00000 11100 11", mret   , N, s->dnpc = mepc);
+  INSTPAT("??????? ????? ????? 001 ????? 11100 11", csrrw  , T, if(dest) R(dest) = *csr; *csr = src1; /*printf("Wmepc == %lx\n", src1);*/);
+  INSTPAT("??????? ????? ????? 010 ????? 11100 11", csrrs  , T, R(dest) = *csr; *csr = ((*csr) | src1); /*printf("Smepc == %lx\n", *csr);*/);
   INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv    , N, INV(s->pc));
   INSTPAT_END();
 

@@ -16,6 +16,8 @@
 #include <isa.h>
 #include "local-include/reg.h"
 
+extern uint64_t mcause, mstatus, mepc;
+
 const char *regs[] = {
   "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
   "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5",
@@ -25,7 +27,8 @@ const char *regs[] = {
 
 void isa_reg_display() {
 	for(int i=0;i<32;i+=2)
-		printf("R[%s]: %" PRIx64 " | R[%s]: %" PRIx64 "\n", regs[i], gpr(i), regs[i+1], gpr(i+1));
+		printf("R[%3s]: %16lx | R[%3s]: %16lx \n", regs[i], gpr(i), regs[i+1], gpr(i+1));
+	printf("mcause == %lx, mstatus == %lx, mepc == %lx\n", mcause, mstatus, mepc);
 	return;
 }
 
