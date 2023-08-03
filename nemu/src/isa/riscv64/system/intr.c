@@ -22,6 +22,7 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
   extern uint64_t mtvec, mepc, mcause;
   mepc = epc;
   mcause = NO;
+  //printf("NO == %d\n", NO);
   return mtvec;
 }
 

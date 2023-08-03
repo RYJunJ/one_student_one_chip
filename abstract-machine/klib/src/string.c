@@ -48,7 +48,7 @@ char *strcat(char *dst, const char *src) {
 }
 
 int strcmp(const char *s1, const char *s2) {
-  int i = -1, tmp;
+  int i = -1, tmp = -1;
   unsigned char tp1, tp2;
   do {
     i++;
@@ -58,7 +58,7 @@ int strcmp(const char *s1, const char *s2) {
     if(tmp)
       break;
   }while(s1[i]&&s2[i]);
-  return tmp;
+  return (tmp < 0) ? -1 : (tmp > 0 ? 1 : 0);
 }
 
 int strncmp(const char *s1, const char *s2, size_t n) {
@@ -97,6 +97,7 @@ void *memmove(void *dst, const void *src, size_t n) {
 void *memcpy(void *out, const void *in, size_t n) {
   const unsigned char *tp_src = in;
   unsigned char *tp_dst = out;
+  //printf("MEMCPY: out == %p, in == %p\n", out, in);
   for(int i = 0; i < n; i++)
     tp_dst[i] = tp_src[i];
   return out;

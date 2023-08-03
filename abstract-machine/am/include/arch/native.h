@@ -6,6 +6,7 @@
 #endif
 
 #include <ucontext.h>
+#define NEMU_NATIVE
 
 struct Context {
   uintptr_t ksp;

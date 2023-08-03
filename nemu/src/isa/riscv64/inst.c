@@ -149,7 +149,7 @@ static int decode_exec(Decode *s) {
   INSTPAT("??????? ????? ????? 101 ????? 11000 11", bge    , B, s->dnpc = ((int64_t)src1  >= (int64_t)src2)  ? s->pc + imm : s->dnpc; IFDEF(CONFIG_FTRACE, check_call(s->dnpc)););
   INSTPAT("??????? ????? ????? 111 ????? 11000 11", bgeu   , B, s->dnpc = ((uint64_t)src1  >= (uint64_t)src2)  ? s->pc + imm : s->dnpc; IFDEF(CONFIG_FTRACE, check_call(s->dnpc)););
   INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak , N, NEMUTRAP(s->pc, R(10))); // R(10) is $a0
-  INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall  , N, s->dnpc = isa_raise_intr(1, s->pc); IFDEF(CONFIG_DIFFTEST, ref_difftest_raise_intr(1)));
+  INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall  , N, s->dnpc = isa_raise_intr(R(17), s->pc); IFDEF(CONFIG_DIFFTEST, ref_difftest_raise_intr(R(17))); IFDEF(CONFIG_ETRACE, extern FILE *fp_etrace; fprintf(fp_etrace, "ECALL: %ld at PC %lx\n", R(17), s->pc)));
   INSTPAT("0011000 00010 00000 000 00000 11100 11", mret   , N, s->dnpc = mepc);
   INSTPAT("??????? ????? ????? 001 ????? 11100 11", csrrw  , T, if(dest) R(dest) = *csr; *csr = src1; /*printf("Wmepc == %lx\n", src1);*/);
   INSTPAT("??????? ????? ????? 010 ????? 11100 11", csrrs  , T, R(dest) = *csr; *csr = ((*csr) | src1); /*printf("Smepc == %lx\n", *csr);*/);

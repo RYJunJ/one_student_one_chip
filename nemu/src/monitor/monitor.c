@@ -47,6 +47,7 @@ static char *ftrace_file = NULL;
 static char *img_file = NULL;
 static int difftest_port = 1234;
 FILE *fp_dtrace = NULL;
+FILE *fp_etrace = NULL;
 
 static long load_img() {
   if (img_file == NULL) {
@@ -119,6 +120,8 @@ void init_monitor(int argc, char *argv[]) {
   IFDEF(CONFIG_FTRACE, init_ftrace(/*"/home/yjunj/ysyx-workbench/am-kernels/tests/cpu-tests/build/recursion-riscv64-nemu.elf"*/ftrace_file));
 
   IFDEF(CONFIG_DTRACE, fp_dtrace = fopen("/home/yjunj/ysyx-workbench/nemu/build/dtrace-log.txt", "w"););
+
+  IFDEF(CONFIG_ETRACE, fp_etrace = fopen("/home/yjunj/ysyx-workbench/nemu/build/etrace-log.txt", "w"););
 
   /* Initialize memory. */
   init_mem();
