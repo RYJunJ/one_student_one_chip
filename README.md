@@ -1,9 +1,7 @@
-# "一生一芯"工程项目
+# One Student One Chip 一生一芯
+## About the Project
+Launched by Professor Yungang Bao from Institute of Computing Technology, Chinese Academy of Sciences (ICT, CAS)
 
-这是"一生一芯"的工程项目. 通过运行
-```bash
-bash init.sh subproject-name
-```
-进行初始化, 具体请参考[实验讲义][lecture note].
+This open custom project instructs students to build their own RISC-V system, including application, OS, processor and SoC. The project will also guide students to conduct physical design for the RISC-V chips and then tape out.
 
-[lecture note]: https://docs.ysyx.org/schedule.html
+[Official Website: https://ysyx.oscc.cc/](https://ysyx.oscc.cc/)
