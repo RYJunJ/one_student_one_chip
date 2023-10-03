@@ -6,6 +6,8 @@ This open custom project instructs students to build their own RISC-V system, in
 
 [Official Website: https://ysyx.oscc.cc/](https://ysyx.oscc.cc/)
 
+## What I learnt from the Project
+
 ## Presentation
 ### Batch Processing Support
 #### Switching between applications is supported using the terminal
