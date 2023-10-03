@@ -1,4 +1,5 @@
 #include <common.h>
+#include <proc.h>
 #include "syscall.h"
 
 struct timeval {
@@ -26,6 +27,9 @@ static unsigned long sys_read(int, void *, unsigned long);
 static unsigned long sys_lseek(int, unsigned long, int);
 static int sys_close(int);
 static int sys_gettimeofday(struct timeval *, struct timezone *);
+static int sys_execve(const char *fname, char * const argv[], char *const envp[]);
+
+void naive_uload(PCB *, const char *);
 
 char *get_file_table_name(int);
 int fs_open(const char *, int, int);
@@ -97,6 +101,12 @@ void do_syscall(Context *c) {
         printf("SYS_GETTIMEOFDAY() == %d\n", c->GPRx);
       #endif
       break;
+    case SYS_execve:
+      c->GPRx = sys_execve((const char *)a[1], (char * const*)a[2], (char * const*)a[3]);
+      #ifdef CONFIG_STRACE
+        printf("SYS_EXECVE()\n");
+      #endif
+      break;
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
 }
@@ -107,6 +117,7 @@ static int sys_yield() {
 }
 
 static void sys_exit(int exit_aug) {
+  sys_execve("/bin/nterm", NULL, NULL);
   halt(exit_aug);
   return;
 }
@@ -145,4 +156,10 @@ static int sys_gettimeofday(struct timeval *tv, struct timezone *tz) {
   tv->tv_sec = tmp_us.us / 1000000;
   tv->tv_usec = tmp_us.us % 1000000;
   return 0;
+}
+
+static int sys_execve(const char *fname, char * const argv[], char *const envp[]) {
+  naive_uload(NULL, fname);
+  return -1;
+  //sys_exit(int exit_aug);
 }

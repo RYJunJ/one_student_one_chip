@@ -10,6 +10,8 @@
 # define Elf_Phdr Elf32_Phdr
 #endif
 
+static int err_execve = 0;
+
 int fs_open(const char *, int, int);
 size_t fs_read(int, void *, size_t);
 size_t fs_lseek(int, size_t, int);
@@ -17,6 +19,11 @@ size_t ramdisk_read(void *, size_t, size_t);
 
 static uintptr_t loader(PCB *pcb, const char *filename) {
   int fd = fs_open(filename, 0, 0);
+  if(fd == -1) {
+    err_execve = -1;
+    return 0;
+  }else
+    err_execve = 0;
   Elf_Ehdr elf_hdr;
   Elf_Phdr elf_pdr;
   fs_read(fd, &elf_hdr, sizeof(Elf_Ehdr));
@@ -39,12 +46,18 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
         memcpy((void *)(elf_pdr.p_vaddr + j), &tmp_zero, 1);
     }
   }
+  fs_lseek(fd, 0, SEEK_SET);
   return elf_hdr.e_entry;
 }
 
 void naive_uload(PCB *pcb, const char *filename) {
   uintptr_t entry = loader(pcb, filename);
+  if(err_execve == -1) {
+    Log("Failed to jump to entry");
+    return;
+  }
   Log("Jump to entry = %p", entry);
   ((void(*)())entry) ();
+  return;
 }
 

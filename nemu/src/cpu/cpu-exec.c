@@ -98,10 +98,11 @@ static void execute(uint64_t n) {
   for (;n > 0; n --) {
     exec_once(&s, cpu.pc);
     g_nr_guest_inst ++;
-    strncpy(ringbuf[idx_ring], s.logbuf, 99);
+    //strncpy(ringbuf[idx_ring], s.logbuf, 99);
     idx_ring = (idx_ring == 19 ? 0 : idx_ring + 1);
     trace_and_difftest(&s, cpu.pc, get_wp_head());
     if (nemu_state.state != NEMU_RUNNING) break;
+    if((g_nr_guest_inst & 0xff) != 0) continue;
     IFDEF(CONFIG_DEVICE, device_update());
   }
 }

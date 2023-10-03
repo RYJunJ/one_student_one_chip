@@ -22,7 +22,10 @@ static void sh_prompt() {
   sh_printf("sh> ");
 }
 
-static void sh_handle_cmd(const char *cmd) {
+static void sh_handle_cmd(char *cmd) {
+  cmd[strlen(cmd) - 1] = '\0';
+  execve(cmd, NULL, NULL);
+  sh_printf("ERR: NOT AN APP\n");
 }
 
 void builtin_sh_run() {
@@ -33,7 +36,7 @@ void builtin_sh_run() {
     SDL_Event ev;
     if (SDL_PollEvent(&ev)) {
       if (ev.type == SDL_KEYUP || ev.type == SDL_KEYDOWN) {
-        const char *res = term->keypress(handle_key(&ev));
+        char *res = (char *)(term->keypress(handle_key(&ev)));
         if (res) {
           sh_handle_cmd(res);
           sh_prompt();

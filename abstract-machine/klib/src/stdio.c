@@ -50,7 +50,7 @@ int printf(const char *fmt, ...) {
   const char *tp_fmt = fmt;
   char *tp_string;
   void *tp_pointer;
-  int tp_int;
+  uint64_t tp_int;
   unsigned long long tp_hex_int;
   va_list arg;
   va_start(arg, fmt);
@@ -83,6 +83,12 @@ int printf(const char *fmt, ...) {
           i++;
           tp_hex_int = va_arg(arg, unsigned long long);
           p_arg = transfer_int(0, tp_hex_int, true, tp_out);
+          tp_out[p_arg] = '\0';
+          putstr(tp_out);
+        }else if(tp_fmt[i+1] == 'l' && tp_fmt[i+2] == 'd') {
+          i+=2;
+          tp_int = va_arg(arg, long);
+          p_arg = transfer_int(0, tp_int, false, tp_out);
           tp_out[p_arg] = '\0';
           putstr(tp_out);
         }

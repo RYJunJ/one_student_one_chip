@@ -3,16 +3,95 @@
 #include <assert.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <assert.h>
+
+static uint32_t bit8_pixel[120100];
+static uint32_t bit32_pixel[120100];
 
 void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect) {
   assert(dst && src);
+  //printf("1(%d, %d)1\n", dst->format->BitsPerPixel, src->format->BitsPerPixel);
   assert(dst->format->BitsPerPixel == src->format->BitsPerPixel);
+  //printf("BlitSurface\n");
+  SDL_Rect tmp_a, tmp_b;
+  if(!dstrect) {
+    tmp_a.x = tmp_a.y = 0;
+    dstrect = &tmp_a;
+  }
+  if(!srcrect) {
+    srcrect = &tmp_b;
+    srcrect->x = 0;
+    srcrect->y = 0;
+    srcrect->w = src->w;
+    srcrect->h = src->h;
+  }
+  
+  for(int i = 0; i < (srcrect->w * srcrect->h); i++) {
+    if((((dstrect->y + i / srcrect->w) * dst->w + dstrect->x + (i % srcrect->w)) < (dst->w * dst->h)) && (((srcrect->y + i / srcrect->w) * src->w + srcrect->x + (i % srcrect->w)) < (src->w * src->h))) {
+      if(dst->format->BitsPerPixel == 8)
+        ((uint8_t *)(dst->pixels))[(dstrect->y + i / srcrect->w) * dst->w + dstrect->x + (i % srcrect->w)] = ((uint8_t *)(src->pixels))[(srcrect->y + i / srcrect->w) * src->w + srcrect->x + (i % srcrect->w)];
+      else
+        ((uint32_t *)(dst->pixels))[(dstrect->y + i / srcrect->w) * dst->w + dstrect->x + (i % srcrect->w)] = ((uint32_t *)(src->pixels))[(srcrect->y + i / srcrect->w) * src->w + srcrect->x + (i % srcrect->w)];
+    }
+  }
+  
 }
 
 void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
+  //printf("FillRect: %d, %d, %d, %d, %lx, %lx\n", dstrect->x, dstrect->y, dstrect->w, dstrect->h, color, (uint8_t)color);
+  if(dstrect) {
+    for(int i = 0; i < (dstrect->w * dstrect->h); i++) {
+      if(dst->format->BitsPerPixel == 8)
+        ((uint8_t *)(dst->pixels))[(dstrect->y + i / dstrect->w) * dst->w + dstrect->x + (i % dstrect->w)] = (uint8_t)color;
+      else
+        ((uint32_t *)(dst->pixels))[(dstrect->y + i / dstrect->w) * dst->w + dstrect->x + (i % dstrect->w)] = color;
+    }
+    //SDL_UpdateRect(dst, dstrect->x, dstrect->y, dstrect->w, dstrect->h);
+  }else {
+    for(int i = 0; i < dst->w * dst->h; i++) {
+      if(dst->format->BitsPerPixel == 8)
+        ((uint8_t *)(dst->pixels))[i] = (uint8_t)color;
+      else
+        ((uint32_t *)(dst->pixels))[i] = color;
+    }
+    //SDL_UpdateRect(dst, 0, 0, dst->w, dst->h);
+  }
 }
 
 void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
+  //printf("UPDATEING RECT: %d, %d, %d, %d\n", x, y, w, h);
+  if(s->format->BitsPerPixel == 8) {
+    int bit8_index = 0;
+    int tmp_w = w;
+    int tmp_h = h;
+    if(!(x || y || w || h)) {
+      tmp_w = s->w;
+      tmp_h = s->h;
+    }
+    for(int i = 0; i < (tmp_w * tmp_h); i++) {
+      //bit8_pixel[i] += (s->format->palette->colors[((uint8_t *)s->pixels)[i]]).val;
+      bit8_pixel[bit8_index] =  (s->format->palette->colors[((uint8_t *)s->pixels)[(y + i / tmp_w) * s->w + x + (i % tmp_w)]]).r << 16;
+      bit8_pixel[bit8_index] += (s->format->palette->colors[((uint8_t *)s->pixels)[(y + i / tmp_w) * s->w + x + (i % tmp_w)]]).g << 8;
+      bit8_pixel[bit8_index] += (s->format->palette->colors[((uint8_t *)s->pixels)[(y + i / tmp_w) * s->w + x + (i % tmp_w)]]).b;
+      bit8_index++;
+    }
+    NDL_DrawRect(bit8_pixel, x, y, tmp_w, tmp_h);
+  }else {
+    int bit32_index = 0;
+    int tmp_w = w;
+    int tmp_h = h;
+    if(!(x || y || w || h)) {
+      tmp_w = s->w;
+      tmp_h = s->h;
+    }
+    for(int i = 0; i < (tmp_w * tmp_h); i++) {
+      //bit8_pixel[i] += (s->format->palette->colors[((uint8_t *)s->pixels)[i]]).val;
+      bit32_pixel[bit32_index] =  ((uint32_t *)s->pixels)[(y + i / tmp_w) * s->w + x + (i % tmp_w)];
+      bit32_index++;
+    }
+    NDL_DrawRect(bit32_pixel, x, y, tmp_w, tmp_h);
+  }
 }
 
 // APIs below are already implemented.
@@ -37,6 +116,8 @@ SDL_Surface* SDL_CreateRGBSurface(uint32_t flags, int width, int height, int dep
   s->format = malloc(sizeof(SDL_PixelFormat));
   assert(s->format);
   if (depth == 8) {
+    s->format->Rloss = s->format->Gloss = s->format->Bloss = s->format->Aloss = 8;
+    s->format->Amask = 0;
     s->format->palette = malloc(sizeof(SDL_Palette));
     assert(s->format->palette);
     s->format->palette->colors = malloc(sizeof(SDL_Color) * 256);
