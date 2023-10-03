@@ -1,0 +1,30 @@
+{
+    "files.associations": {
+        "new": "cpp",
+        "autoconf.h": "c",
+        "common.h": "c",
+        "reg.h": "c",
+        "nemu.h": "c",
+        "readline.h": "c",
+        "paddr.h": "c",
+        "isa.h": "c",
+        "history.h": "c",
+        "sdb.h": "c",
+        "*.tcc": "c",
+        "condition_variable": "c",
+        "functional": "c",
+        "ostream": "c",
+        "sstream": "c",
+        "cmath": "c",
+        "regex": "c",
+        "tuple": "c",
+        "cstdint": "cpp",
+        "*.inc": "cpp",
+        "elf.h": "c",
+        "iomanip": "c",
+        "system_error": "c",
+        "cstdlib": "c",
+        "streambuf": "c"
+    },
+    "C_Cpp.errorSquiggles": "disabled"
+}
