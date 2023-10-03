@@ -14,7 +14,8 @@ This open custom project instructs students to build their own RISC-V system, in
 在一生一芯项目中也有对拍思想的应用，我们在每一个抽象层中都单独添加了对拍的支持：
 | 抽象层 | 可能有错误的实现 | 一定正确的实现（用来对拍）|
 | ----- | ------------- | --------------------- |
-|
+| OS Library | SDL, NDL | Linux Library | 
+
 #### DEBUG的本质是状态追踪
 ## Presentation
 ### Batch Processing Support
