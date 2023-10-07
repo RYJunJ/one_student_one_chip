@@ -27,6 +27,7 @@ This open custom project instructs students to build their own RISC-V system, in
 | 算法 | 关键变量的值 |
 | CPU | 32个通用寄存器的值 |  
 
+
 所以，在debug CPU时，我们设计了SDB(Simple DeBugger的简称)，用来打印32个通用寄存器的值。  
 在调试系统调用功能时，我们也设计了自己的debugger：strace，用来打印所有的系统调用记录。
 而在调试算法时，往往会采用最简单的gdb，目的也是为了跟踪少数几个关键变量的变化情况。
