@@ -12,9 +12,23 @@ This open custom project instructs students to build their own RISC-V system, in
 对拍是我在算法竞赛中接触到的概念，核心思想是将 有可能有BUG的实现 和 一定正确的实现 做比较。  
 在算法竞赛中，对拍是：将一个我们正在实现的，可能有潜在BUG的版本 与 一个低效，但是一定正确的版本依次运行，比较两者运行结果的不同，当遇到有差异的运行结果时，便意味着我们找到了BUG。  
 在一生一芯项目中也有对拍思想的应用，我们为不同的抽象层添加了不同的对拍的支持：  
- - Navy中的native: 用Navy中的库替代Linux native的库, 测试游戏是否能在Navy库的支撑下正确运行.
+ - Navy Library (APP需要的运行时库): 用Linux native的库代替Navy库, 以比较测试APP是否能在Navy库的支撑下正确运行，从而判断BUG是否发生在本抽象层.
+ - OS & OS库：用Linux系统调用和glibc来替换NanOS-lite, libos, Newlib，以比较测试BUG是否出现在OS层
+ - RISC-V CPU：用Spike, the RISC-V ISA Simulator，来比较测试我们的CPU实现是否有问题，从而判断BUG是否产生在硬件层
 
 #### DEBUG的本质是状态追踪
+锁定BUG所在抽象层后，我们需要在不同的抽象层去DEBUG。但是，在大多数抽象层，并不存在gdb这种成熟的DEBUG工具。所以，我们需要理解DEBUG的本质，然后自己设计DEBUG工具。  
+我认为，DEBUG的本质就是在追踪状态，正如状态机模型一样。  
+在不同的抽象层，这个具体“状态”的指代也有所不同：
+| 抽象层 | 状态 |
+| ----- | --- |
+| 文件系统 | 每一次打开和关闭文件的名字，参数和返回值 |
+| 系统调用 | 每一次系统调用的名字，参数和返回值 |
+| 算法 | 关键变量的值 |
+| CPU | 32个通用寄存器的值 |
+所以，在debug CPU时，我们设计了SDB(Simple DeBugger的简称)，用来打印32个通用寄存器的值。  
+在调试系统调用功能时，我们也设计了自己的debugger：strace，用来打印所有的系统调用记录。
+而在设计算法时，往往会采用最简单的gdb，目的也是为了跟踪少数几个关键变量的变化情况。
 ## Presentation
 ### Batch Processing Support
 #### Switching between applications is supported using the terminal
