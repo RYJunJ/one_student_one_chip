@@ -8,7 +8,7 @@ This open custom project instructs students to build their own RISC-V system, in
 
 ## What I learnt from the Project
 ### 如何调试大型工程
-#### 使用“对拍”思想锁定BUG所在的抽象层
+#### 使用Differential Testing思想锁定BUG所在的抽象层
 对拍是我在算法竞赛中接触到的概念，核心思想是将 有可能有BUG的实现 和 一定正确的实现 做比较。  
 在算法竞赛中，对拍是：将一个我们正在实现的，可能有潜在BUG的版本 与 一个低效，但是一定正确的版本依次运行，比较两者运行结果的不同，当遇到有差异的运行结果时，便意味着我们找到了BUG。  
 在一生一芯项目中也有对拍思想的应用，我们为不同的抽象层添加了不同的对拍的支持：  
@@ -28,7 +28,18 @@ This open custom project instructs students to build their own RISC-V system, in
 | CPU | 32个通用寄存器的值 |  
 所以，在debug CPU时，我们设计了SDB(Simple DeBugger的简称)，用来打印32个通用寄存器的值。  
 在调试系统调用功能时，我们也设计了自己的debugger：strace，用来打印所有的系统调用记录。
-而在设计算法时，往往会采用最简单的gdb，目的也是为了跟踪少数几个关键变量的变化情况。
+而在调试算法时，往往会采用最简单的gdb，目的也是为了跟踪少数几个关键变量的变化情况。
+### 如何高效开发大型项目
+#### 编写工具优化开发效率
+在开发大型项目的过程中通过编写工具来解决“恼人”的地方。  
+在一生一芯中，我编写了各种各样的工具来优化开发效率：
+ - 编写sdb (Simple DeBugger)使我能单步执行RISC-V ISA的每一条语句，同时还能打印任意寄存器和内存位置的值
+ - 编写mtrace，以记录每一条访存指令，以及访存地址
+ - 编写ftrace，记录每一次汇编程序中的函数调用和返回
+ - 编写dtrace，记录设备访问的踪迹
+ - 添加Differential Testing 的支持，将Spike作为RV64IM CPU的正确实现，来比对我的CPU实现
+如果没有这些工具的支持，我的开发周期将会大大延长
+
 ## Presentation
 ### Batch Processing Support
 #### Switching between applications is supported using the terminal
