@@ -10,7 +10,8 @@ This open custom project instructs students to build their own RISC-V system, in
 ### How to debug large-scale projects
 #### Use the "Differential Testing" idea to target the abstraction layer where the bug is located
 In large projects, because there are too many abstraction layers, when faced with a bug, it is difficult to determine which abstraction layer the bug actually arises from. 
-> For example, in a computer system, hardware bugs can manifest in both the operating system and user software.
+> For example, in a computer system, hardware bugs can manifest in both the operating system and user software.  
+
 Therefore, only by first locating the abstraction layer where the bug is located, we can proceed to the next step of more detailed debugging.
 **Differential Testing** is a concept I was first introduced to in algorithmic competitions.  
 In an algorithmic competition, **Differential Testing** is to run a potentially buggy version of what we are implementing and an inefficient, but definitely correct version in sequence, and compare the results of the two runs, and when we encounter a difference in the results of the two runs, it means that we have found a bug.  
