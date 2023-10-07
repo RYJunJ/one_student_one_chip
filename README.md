@@ -47,7 +47,7 @@ In the One Student One Chip project, I have Implemented a variety of tools to op
 Without the support of these tools, my development cycle would be significantly extended.
 
 
-### 如何调试大型工程
+### Chinese Version Below
 #### 使用Differential Testing思想锁定BUG所在的抽象层
 在大型项目中，由于有太多抽象层，面对一个BUG时，我们很难判断这个BUG究竟产生于哪一个抽象层。
 > 比如：在计算机系统中，硬件上的BUG，在OS和用户软件上都会有体现。
