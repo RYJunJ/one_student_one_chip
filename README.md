@@ -9,6 +9,9 @@ This open custom project instructs students to build their own RISC-V system, in
 ## What I learnt from the Project
 ### How to debug large-scale projects
 #### Use the "Differential Testing" idea to target the abstraction layer where the bug is located
+In large projects, because there are too many abstraction layers, when faced with a bug, it is difficult to determine which abstraction layer the bug actually arises from. 
+> For example, in a computer system, hardware bugs can manifest in both the operating system and user software.
+Therefore, only by first locating the abstraction layer where the bug is located, we can proceed to the next step of more detailed debugging.
 **Differential Testing** is a concept I was first introduced to in algorithmic competitions.  
 In an algorithmic competition, **Differential Testing** is to run a potentially buggy version of what we are implementing and an inefficient, but definitely correct version in sequence, and compare the results of the two runs, and when we encounter a difference in the results of the two runs, it means that we have found a bug.  
 **Differential Testing** is also used in this project, where I have added different Differential Testing support for different abstraction layers: 
@@ -45,6 +48,9 @@ Without the support of these tools, my development cycle would be significantly 
 
 ### 如何调试大型工程
 #### 使用Differential Testing思想锁定BUG所在的抽象层
+在大型项目中，由于有太多抽象层，面对一个BUG时，我们很难判断这个BUG究竟产生于哪一个抽象层。
+> 比如：在计算机系统中，硬件上的BUG，在OS和用户软件上都会有体现。  
+所以，只有先定位BUG所在的抽象层，我们才能进行下一步的更细节的debug。
 对拍是我在算法竞赛中接触到的概念，核心思想是将 有可能有BUG的实现 和 一定正确的实现 做比较。  
 在算法竞赛中，对拍是：将一个我们正在实现的，可能有潜在BUG的版本 与 一个低效，但是一定正确的版本依次运行，比较两者运行结果的不同，当遇到有差异的运行结果时，便意味着我们找到了BUG。  
 在一生一芯项目中也有对拍思想的应用，我们为不同的抽象层添加了不同的对拍的支持：  
