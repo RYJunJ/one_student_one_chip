@@ -12,7 +12,7 @@ This open custom project instructs students to build their own RISC-V system, in
 In large projects, because there are too many abstraction layers, when faced with a bug, it is difficult to determine which abstraction layer the bug actually arises from. 
 > For example, in a computer system, hardware bugs can manifest in both the operating system and user software.  
 
-Therefore, only by first locating the abstraction layer where the bug is located, we can proceed to the next step of more detailed debugging.
+Therefore, only by first locating the abstraction layer where the bug is located, we can proceed to the next step of more detailed debugging.  
 **Differential Testing** is a concept I was first introduced to in algorithmic competitions.  
 In an algorithmic competition, **Differential Testing** is to run a potentially buggy version of what we are implementing and an inefficient, but definitely correct version in sequence, and compare the results of the two runs, and when we encounter a difference in the results of the two runs, it means that we have found a bug.  
 **Differential Testing** is also used in this project, where I have added different Differential Testing support for different abstraction layers: 
@@ -21,7 +21,7 @@ In an algorithmic competition, **Differential Testing** is to run a potentially 
  - RISC-V CPU: use `Spike`, the RISC-V ISA Simulator, to comparatively test our CPU implementation to determine if the bug is in the hardware layer.
 
 #### Debugging is all about state tracking
-After locating the abstraction layer where the bug is located, we need to debug at the specific abstraction layer, but in most abstraction layers, there is no mature debugger like `gdb`. So, we need to understand the essence of debugging, and then design our own debuggers for different layers.  
+After locating the abstraction layer where the bug is located, we need to debug at the specific abstraction layer, but in most abstraction layers, there is no mature debugger like `gdb`.   So, we need to understand the essence of debugging, and then design our own debuggers for different layers.  
 I think debugging is all about tracking state, just like the finite-state automaton.  
 At different layers, the specific references to "state" will vary:
 | Abstraction layer | state |
@@ -33,7 +33,7 @@ At different layers, the specific references to "state" will vary:
 
 
 So, when debugging the CPU, we designed `SDB` (short for Simple DeBugger) to print the values of 32 general purpose registers.  
-When debugging system calls, we also designed our own debugger: `strace`, which is used to print all system call logs.
+When debugging system calls, we also designed our own debugger: `strace`, which is used to print all system call logs.  
 And when debugging algorithms, the `gdb` is often used, also with the purpose of tracking changes in a few key variables.
 ### How to efficiently develop large projects
 #### Program tools to optimize development efficiency
