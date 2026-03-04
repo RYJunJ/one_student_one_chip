@@ -1,10 +1,16 @@
-# One Student One Chip 一生一芯
+# One Student One Chip
 ## About the Project
 Launched by Professor Yungang Bao from Institute of Computing Technology, Chinese Academy of Sciences (ICT, CAS)
 
-This open project instructs students to build their own RISC-V system, including application, OS, processor and SoC. The project will also guide students to conduct physical design for the RISC-V chips and then tape out.
+This open project instructs students to build their own RISC-V system, including application, OS, processor and SoC. 
 
-[Official Website: https://ysyx.oscc.cc/](https://ysyx.oscc.cc/)
+In this project, students implement an RV64IM CPU in Verilog and build a mini-OS with batch-processing support on top of it. On this self-built system, several applications will be ported to the mini-OS, including a slide player, Flappy Bird, and the game Chinese Paladin (Sword and Fairy).
+
+**The final result is a complete computing stack where user-level applications run on a self-developed mini-OS, which runs on a self-designed RISC-V CPU.**
+
+The primary value of this project lies in cultivating the ability to perform **hardware-software co-debugging** and **troubleshooting across multiple layers of abstraction**.
+
+[Official Website: https://ysyx.oscc.cc/en](https://ysyx.oscc.cc/en)
 
 ## What I learnt from the Project
 ### How to debug large-scale projects
